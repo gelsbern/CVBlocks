@@ -1,0 +1,17 @@
+name: CVBlocks
+main: org.cubeville.cvblocks.CVBlocks
+author: FrediW
+version: 0.1
+
+depend: [CVTools]
+
+commands:
+  cvblocks:
+    description: CVBlocks command
+    permission: cvblocks.admin
+
+permissions:
+
+  cvblocks.admin:
+    description: General access to all cvblocks commands
+    default: op
