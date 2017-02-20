@@ -4,7 +4,7 @@
   <groupId>org.cubeville</groupId>
   <artifactId>CVBlocks</artifactId>
   <packaging>jar</packaging>
-  <version>0.1</version>
+  <version>0.2</version>
   <name>CVBlocks</name>
   <url>http://maven.apache.org</url>
   <properties>
@@ -13,7 +13,7 @@
   <dependencies>
     <dependency>
       <groupId>org.spigotmc</groupId>
-      <artifactId>spigot</artifactId>
+      <artifactId>spigot-api</artifactId>
       <version>1.9.4-R0.1-SNAPSHOT</version>
       <type>jar</type>
       <scope>compile</scope>
@@ -21,7 +21,7 @@
     <dependency>
       <groupId>org.cubeville</groupId>
       <artifactId>CVTools</artifactId>
-      <version>0.3</version>
+      <version>0.4</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
