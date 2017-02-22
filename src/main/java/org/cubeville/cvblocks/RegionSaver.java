@@ -2,6 +2,7 @@ package org.cubeville.cvblocks;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.zip.GZIPOutputStream;
 
 import org.bukkit.block.Block;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -17,46 +18,39 @@ public class RegionSaver extends BukkitRunnable
     private int y;
     private int z;
 
-    private FileOutputStream ostream;
+    private byte[] buffer;
+    private int bufferPointer;
 
-    World world;
+    private String filename;
     
-    public RegionSaver(Vector min, Vector max, World world) {
+    private World world;
+    
+    public RegionSaver(Vector min, Vector max, World world, String filename) {
         this.min = min;
         this.max = max;
         this.world = world;
+
         x = min.getBlockX();
         y = min.getBlockY();
         z = min.getBlockZ();
-        try {
-            ostream = new FileOutputStream("/tmp/testsave");
-        }
-        catch(IOException e) {
-        }
+
+        Vector size = max.clone();
+        size.subtract(min);
+        size.add(new Vector(1, 1, 1));
+        int bufferSize = size.getBlockX() * size.getBlockY() * size.getBlockZ() * 2;
+        buffer = new byte[bufferSize];
+        bufferPointer = 0;
+        this.filename = filename;
+
         runTaskTimer(CVBlocks.getInstance(), 1, 1);
     }
 
-    private void abortThread() {
-        try {
-            ostream.close();
-        }
-        catch(IOException e) {}
-        cancel();
-    }
-    
     public void run() {
         long startTime = System.currentTimeMillis();
         while(System.currentTimeMillis() - startTime < 10) {
             Block block = world.getBlockAt(x, y, z);
-            try {
-                ostream.write(block.getTypeId());
-                ostream.write(block.getData());
-            }
-            catch(IOException e) {
-                System.out.println("IOException, abort");
-                abortThread();
-                break;
-            }
+            buffer[bufferPointer++] = (byte) block.getTypeId();
+            buffer[bufferPointer++] = block.getData();
             x += 1;
             if(x > max.getBlockX()) {
                 x = min.getBlockX();
@@ -64,15 +58,38 @@ public class RegionSaver extends BukkitRunnable
                 if(z > max.getBlockZ()) {
                     z = min.getBlockZ();
                     y++;
-                    System.out.println("Start layer " + (y - min.getBlockY()) + " of " + (max.getBlockY() - min.getBlockY()));
                     if(y > max.getBlockY()) {
-                        System.out.println("Region save finished.");
-                        abortThread();
+                        finishThread();
                         break;
                     }
                 }
             }
         }
     }
-    
+
+    private void finishThread() {
+        cancel();
+        FileOutputStream file = null;
+        try {
+            file = new FileOutputStream(filename);
+            GZIPOutputStream stream = null;
+            try {
+                stream = new GZIPOutputStream(file);
+                stream.write(buffer);
+            }
+            catch (IOException e) {}
+            finally {
+                if(stream != null) {
+                    try { stream.close(); } catch (IOException e) {}
+                }
+            }
+        }
+        catch (IOException e) {}
+        finally {
+            if(file != null) {
+                try { file.close(); } catch (IOException e) {}
+            }
+        }
+        
+    }
 }

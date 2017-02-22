@@ -1,5 +1,7 @@
 package org.cubeville.cvblocks;
 
+import java.io.File;
+
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -25,6 +27,9 @@ public class CVBlocks extends JavaPlugin {
         commandParser.addCommand(new LoadRegion());
         commandParser.addCommand(new SaveRegion());
         commandParser.addCommand(new SelectRegion());
+        File dataFolder = new File(getDataFolder(), "data");
+        if(!dataFolder.exists()) dataFolder.mkdirs();
+        BlockToolUtil.setDataDirectory(dataFolder);
     }
 
     public void onDisable() {

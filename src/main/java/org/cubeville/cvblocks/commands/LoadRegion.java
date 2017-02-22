@@ -22,6 +22,7 @@ public class LoadRegion extends BaseCommand
         addBaseParameter(new CommandParameterString()); // filename
         addBaseParameter(new CommandParameterString()); // world name
         addBaseParameter(new CommandParameterString()); // region name
+        addFlag("transparent");
         setPermission("cvtools.loadregion");
     }
 
@@ -33,7 +34,7 @@ public class LoadRegion extends BaseCommand
         
         String regionName = (String) baseParameters.get(2);
 
-        BlockToolUtil.loadRegionFromFile(world, regionName, (String) baseParameters.get(0));
+        BlockToolUtil.loadRegionFromFile(world, regionName, (String) baseParameters.get(0), flags.contains("transparent"));
         return null;
     }
 }

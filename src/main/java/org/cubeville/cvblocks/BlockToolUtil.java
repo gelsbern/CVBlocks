@@ -1,5 +1,6 @@
 package org.cubeville.cvblocks;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,6 +29,11 @@ public class BlockToolUtil
 {
     private static Random random = new Random();
     private static WorldGuardPlugin worldGuard = (WorldGuardPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
+    private static File dataDirectory = null;
+
+    public static void setDataDirectory(File directory) {
+        dataDirectory = directory;
+    }
     
     public static void fillRegion(World world, String region, List<WeightedMaterial> materialList, List<WeightedMaterial> replacedMaterialList) {
         List<Block> blocks = BlockUtils.getBlocksInWGRegion(world, region, 50000);
@@ -136,13 +142,15 @@ public class BlockToolUtil
     public static void saveRegionToFile(World sourceWorld, String sourceRegionName, String filename) {
         Vector smin = BlockUtils.getWGRegionMin(sourceWorld, sourceRegionName);
         Vector smax = BlockUtils.getWGRegionMax(sourceWorld, sourceRegionName);
-        new RegionSaver(smin, smax, sourceWorld);
+        File file = new File(dataDirectory, filename + ".cvblocks.gz");
+        new RegionSaver(smin, smax, sourceWorld, file.getAbsolutePath());
     }
 
-    public static void loadRegionFromFile(World targetWorld, String targetRegionName, String filename) {
+    public static void loadRegionFromFile(World targetWorld, String targetRegionName, String filename, boolean transparent) {
         Vector tmin = BlockUtils.getWGRegionMin(targetWorld, targetRegionName);
         Vector tmax = BlockUtils.getWGRegionMax(targetWorld, targetRegionName);
-        new RegionLoader(tmin, tmax, targetWorld, true);
+        File file = new File(dataDirectory, filename + ".cvblocks.gz");
+        new RegionLoader(tmin, tmax, targetWorld, file.getAbsolutePath(), transparent);
     }
     
 }
