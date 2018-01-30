@@ -1,24 +1,18 @@
 package org.cubeville.cvblocks;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import java.util.List;
 import java.util.Random;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -139,11 +133,11 @@ public class BlockToolUtil
         }
     }
 
-    public static void saveRegionToFile(World sourceWorld, String sourceRegionName, String filename) {
+    public static void saveRegionToFile(World sourceWorld, String sourceRegionName, String filename, Set<Material> filteredMaterials) {
         Vector smin = BlockUtils.getWGRegionMin(sourceWorld, sourceRegionName);
         Vector smax = BlockUtils.getWGRegionMax(sourceWorld, sourceRegionName);
         File file = new File(dataDirectory, filename + ".cvblocks.gz");
-        new RegionSaver(smin, smax, sourceWorld, file.getAbsolutePath());
+        new RegionSaver(smin, smax, sourceWorld, file.getAbsolutePath(), filteredMaterials);
     }
 
     public static void loadRegionFromFile(World targetWorld, String targetRegionName, String filename, boolean transparent) {
