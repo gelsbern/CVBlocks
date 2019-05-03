@@ -2,10 +2,8 @@ package org.cubeville.cvblocks;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -23,14 +21,11 @@ public class RegionSaver extends BukkitRunnable
     private byte[] buffer;
     private int bufferPointer;
 
-    private Set<Material> filteredMaterials;
-    
     private String filename;
     
     private World world;
     
-    public RegionSaver(Vector min, Vector max, World world, String filename, Set<Material> filteredMaterials) {
-        System.out.println("Start saving region to file " + filename);
+    public RegionSaver(Vector min, Vector max, World world, String filename) {
         this.min = min;
         this.max = max;
         this.world = world;
@@ -47,7 +42,6 @@ public class RegionSaver extends BukkitRunnable
         bufferPointer = 0;
         this.filename = filename;
 
-        this.filteredMaterials = filteredMaterials;
         runTaskTimer(CVBlocks.getInstance(), 1, 1);
     }
 
@@ -55,14 +49,8 @@ public class RegionSaver extends BukkitRunnable
         long startTime = System.currentTimeMillis();
         while(System.currentTimeMillis() - startTime < 10) {
             Block block = world.getBlockAt(x, y, z);
-            if(filteredMaterials != null && filteredMaterials.contains(block.getType()) == false) {
-                buffer[bufferPointer++] = 0;
-                buffer[bufferPointer++] = 0;
-            }
-            else {
-                buffer[bufferPointer++] = (byte) block.getTypeId();
-                buffer[bufferPointer++] = block.getData();
-            }
+            buffer[bufferPointer++] = (byte) block.getTypeId();
+            buffer[bufferPointer++] = block.getData();
             x += 1;
             if(x > max.getBlockX()) {
                 x = min.getBlockX();
@@ -70,7 +58,6 @@ public class RegionSaver extends BukkitRunnable
                 if(z > max.getBlockZ()) {
                     z = min.getBlockZ();
                     y++;
-                    System.out.println("Region saver: y = " + y);
                     if(y > max.getBlockY()) {
                         finishThread();
                         break;
@@ -81,7 +68,6 @@ public class RegionSaver extends BukkitRunnable
     }
 
     private void finishThread() {
-        System.out.println("Region saver done.");
         cancel();
         FileOutputStream file = null;
         try {

@@ -27,7 +27,6 @@ public class CVBlocks extends JavaPlugin {
         commandParser.addCommand(new LoadRegion());
         commandParser.addCommand(new SaveRegion());
         commandParser.addCommand(new SelectRegion());
-        commandParser.addCommand(new SmolCopy());
         File dataFolder = new File(getDataFolder(), "data");
         if(!dataFolder.exists()) dataFolder.mkdirs();
         BlockToolUtil.setDataDirectory(dataFolder);
