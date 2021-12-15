@@ -13,6 +13,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.util.Vector;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -27,6 +29,24 @@ public class BlockToolUtil
 
     public static void setDataDirectory(File directory) {
         dataDirectory = directory;
+    }
+
+    public static void killEntities(World world, String regionName, EntityType entityType) {
+        Vector rmin = BlockUtils.getWGRegionMin(world, regionName);
+        Vector rmax = BlockUtils.getWGRegionMax(world, regionName);
+
+        List<Entity> entities = world.getEntities();
+        for(Entity entity: entities) {
+            if(entity.getType() == entityType) {
+                Vector loc = entity.getLocation().toVector();
+                if(loc.getX() >= rmin.getX() && loc.getX() <= rmax.getX() + 1 &&
+                   loc.getY() >= rmin.getY() && loc.getY() <= rmax.getY() + 1 &&
+                   loc.getZ() >= rmin.getZ() && loc.getZ() <= rmax.getZ() + 1) {
+                    entity.remove();
+                }
+            }
+            
+        }
     }
     
     public static void fillRegion(World world, String region, List<WeightedMaterial> materialList, List<WeightedMaterial> replacedMaterialList) {
@@ -72,14 +92,30 @@ public class BlockToolUtil
     
     private static void setBlock(Block block, WeightedMaterial material) {
         block.setType(material.getMaterial());
-        if(material.getDataValue() != null) {
-            block.setData((byte) ((int) material.getDataValue()));
-        }
-        else {
-            block.setData((byte) 0);
-        }
+        // if(material.getDataValue() != null) { // TODO
+        //     block.setData((byte) ((int) material.getDataValue()));
+        // }
+        // else {
+        //     block.setData((byte) 0);
+        // }
     }
 
+    public static void copyToCoord(World sourceWorld, String regionName, World targetWorld, Vector tmin, boolean sync) {
+        Vector smin = BlockUtils.getWGRegionMin(sourceWorld, regionName);
+        Vector smax = BlockUtils.getWGRegionMax(sourceWorld, regionName);
+
+        int sizex = smax.getBlockX() - smin.getBlockX();
+        int sizey = smax.getBlockY() - smin.getBlockY();
+        int sizez = smax.getBlockZ() - smin.getBlockZ();
+
+        System.out.println("Creating region copyer: " + sync);
+        new RegionCopier(sourceWorld, smin, targetWorld, tmin, sizex, sizey, sizez, sync);
+    }
+
+    public static void copyToCoord(World sourceWorld, String regionName, World targetWorld, Vector tmin) {
+        copyToCoord(sourceWorld, regionName, targetWorld, tmin, false);
+    }
+    
     public static void copyRegion(World sourceWorld, String sourceRegionName, World targetWorld, String targetRegionName) {
         Vector smin = BlockUtils.getWGRegionMin(sourceWorld, sourceRegionName);
         Vector smax = BlockUtils.getWGRegionMax(sourceWorld, sourceRegionName);
@@ -112,22 +148,23 @@ public class BlockToolUtil
                 for(int z = 0; z < sizez; z++) {
                     Block targetBlock = targetWorld.getBlockAt(tminx + x, tminy + y, tminz + z);
                     Block sourceBlock = sourceWorld.getBlockAt(sminx + x, sminy + y, sminz + z);
-                    targetBlock.setType(sourceBlock.getType());
-                    BlockState data = sourceBlock.getState();
-                    if(data instanceof Skull) {
-                        targetBlock.setData(sourceBlock.getData()); // TODO: Should be changed with materialdata probably?
-                        Skull sourceSkull = (Skull) data;
-                        Skull targetSkull = (Skull) targetBlock.getState();
-                        targetSkull.setSkullType(sourceSkull.getSkullType());
-                        targetSkull.setRotation(sourceSkull.getRotation());
-                        if(sourceSkull.getSkullType() == SkullType.PLAYER) {
-                            targetSkull.setOwner(sourceSkull.getOwner());
-                        }
-                        targetSkull.update();
-                    }
-                    else {
-                        targetBlock.setData(sourceBlock.getData());
-                    }
+                    targetBlock.setBlockData(sourceBlock.getBlockData());
+                    //targetBlock.setType(sourceBlock.getType());
+                    //BlockState data = sourceBlock.getState();
+                    //if(data instanceof Skull) {
+                        // targetBlock.setData(sourceBlock.getData()); // TODO: Should be changed with materialdata probably?
+                        // Skull sourceSkull = (Skull) data;
+                        // Skull targetSkull = (Skull) targetBlock.getState();
+                        // targetSkull.setSkullType(sourceSkull.getSkullType());
+                        // targetSkull.setRotation(sourceSkull.getRotation());
+                        // if(sourceSkull.getSkullType() == SkullType.PLAYER) {
+                        //     targetSkull.setOwner(sourceSkull.getOwner());
+                        // }
+                        // targetSkull.update();
+                    //}
+                    //else {
+                        // targetBlock.setData(sourceBlock.getData()); // TODO
+                    //}
                 }
             }
         }
@@ -143,6 +180,10 @@ public class BlockToolUtil
     public static void loadRegionFromFile(World targetWorld, String targetRegionName, String filename, boolean transparent) {
         Vector tmin = BlockUtils.getWGRegionMin(targetWorld, targetRegionName);
         Vector tmax = BlockUtils.getWGRegionMax(targetWorld, targetRegionName);
+        loadFromFile(targetWorld, tmin, tmax, filename, transparent);
+    }
+
+    public static void loadFromFile(World targetWorld, Vector tmin, Vector tmax, String filename, boolean transparent) {
         File file = new File(dataDirectory, filename + ".cvblocks.gz");
         new RegionLoader(tmin, tmax, targetWorld, file.getAbsolutePath(), transparent);
     }

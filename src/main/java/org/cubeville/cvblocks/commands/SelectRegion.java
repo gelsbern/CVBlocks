@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.cubeville.commons.commands.BaseCommand;
 import org.cubeville.commons.commands.CommandExecutionException;
 import org.cubeville.commons.commands.CommandParameterString;
+import org.cubeville.commons.commands.CommandParameterListString;
 import org.cubeville.commons.commands.CommandResponse;
 
 public class SelectRegion extends BaseCommand
@@ -35,6 +36,8 @@ public class SelectRegion extends BaseCommand
         addBaseParameter(new CommandParameterString()); // world name
         addBaseParameter(new CommandParameterString()); // region name
         addBaseParameter(new CommandParameterString()); // group name (spleef / lavarun / ...)
+        addParameter("conditionalreplace", true, new CommandParameterListString());
+        addParameter("conditionaldefault", true, new CommandParameterString());
         setPermission("cvtools.fillregion");
         groupSelection = new HashMap<>();
     }
@@ -54,12 +57,24 @@ public class SelectRegion extends BaseCommand
     @Override
     public CommandResponse execute(CommandSender commandSender, Set<String> flags, Map<String, Object> parameters, List<Object> baseParameters)
         throws CommandExecutionException {
+
         World world = Bukkit.getWorld((String) baseParameters.get(0));
+        if(world == null) throw new CommandExecutionException("World does not exist!");
+
         String regionName = (String) baseParameters.get(1);
         String groupName = (String) baseParameters.get(2);
 
-        if(world == null) throw new CommandExecutionException("World does not exist!");
-
+        List<String> conditionalreplace = (List<String>) parameters.get("conditionalreplace");
+        if(conditionalreplace != null) {
+            if(groupSelection.get(groupName) == null || false == conditionalreplace.contains(groupSelection.get(groupName).getRegion())) { // doesn't match current selection
+                String conditionaldefault = (String) parameters.get("conditionaldefault");
+                if(conditionaldefault != null) {
+                    groupSelection.put(groupName, new RegionId((String) baseParameters.get(0), conditionaldefault));
+                }
+                return null;
+            }
+        }
+        
         groupSelection.put(groupName, new RegionId((String) baseParameters.get(0), regionName));
         return null;
     }

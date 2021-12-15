@@ -60,7 +60,7 @@ public class RegionSaver extends BukkitRunnable
                 buffer[bufferPointer++] = 0;
             }
             else {
-                buffer[bufferPointer++] = (byte) block.getTypeId();
+                // buffer[bufferPointer++] = (byte) block.getTypeId(); // TODO
                 buffer[bufferPointer++] = block.getData();
             }
             x += 1;

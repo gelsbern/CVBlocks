@@ -16,8 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
-import com.sk89q.worldedit.bukkit.*;
-import com.sk89q.worldedit.bukkit.selections.*;
+import org.cubeville.commons.utils.BlockUtils;
 
 import org.cubeville.commons.commands.BaseCommand;
 import org.cubeville.commons.commands.CommandExecutionException;
@@ -38,14 +37,10 @@ public class SmolCopy extends BaseCommand
         if(!(commandSender instanceof Player)) throw new CommandExecutionException("Can only be used by players!");
         Player player = (Player) commandSender;
 
-        WorldEditPlugin worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
-        Selection selection = worldEdit.getSelection(player);
-        if(selection == null) throw new CommandExecutionException("No selection!");
-
-        World world = selection.getWorld();
-        Location min = selection.getMinimumPoint();
-        Location max = selection.getMaximumPoint();
-
+        Location min = BlockUtils.getWESelectionMin(player);
+        Location max = BlockUtils.getWESelectionMax(player);
+        World world = min.getWorld();
+        
         double blockDist = 0.187;
         double yOffset = 2.7 * blockDist;
 
@@ -55,7 +50,7 @@ public class SmolCopy extends BaseCommand
             for(int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for(int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     Block block = world.getBlockAt(x, y, z);
-                    if(block.getTypeId() == 0) continue;
+                    //if(block.getTypeId() == 0) continue; // TODO
                     Location l = player.getLocation();
                     l.add((x - min.getBlockX()) * blockDist + userOffset.getX() * blockDist,
                           (y - min.getBlockY()) * blockDist - yOffset + userOffset.getY() * blockDist,
@@ -69,9 +64,9 @@ public class SmolCopy extends BaseCommand
                     stand.setArms(true);
                     stand.setSmall(true);
                     stand.setVisible(false);
-                    ItemStack item = new ItemStack(block.getTypeId(), 1, (short)0, (byte)block.getData());
-                    stand.setItemInHand(item);
-                    stand.setRightArmPose(new EulerAngle(Math.toRadians(-15),Math.toRadians(45),Math.toRadians(0)));
+                    //ItemStack item = new ItemStack(block.getTypeId(), 1, (short)0, (byte)block.getData()); // TODO these 3 lines
+                    //stand.setItemInHand(item);
+                    //stand.setRightArmPose(new EulerAngle(Math.toRadians(-15),Math.toRadians(45),Math.toRadians(0)));
                 }
             }
         }

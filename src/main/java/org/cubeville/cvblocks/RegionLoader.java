@@ -80,8 +80,8 @@ public class RegionLoader extends BukkitRunnable
                 byte dat = buffer[bufferPointer++];
                 if(transparent == false || mat != 0) {
                     Block block = targetWorld.getBlockAt(x, y, z);
-                    block.setTypeId(mat);
-                    block.setData(dat);
+                    //block.setTypeId(mat); // TODO!
+                    //block.setData(dat);
                 }
                 x += 1;
                 if(x > max.getBlockX()) {

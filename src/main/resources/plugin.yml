@@ -1,8 +1,8 @@
 name: CVBlocks
 main: org.cubeville.cvblocks.CVBlocks
 author: FrediW
-version: 0.2
-
+version: 1.18
+api-version: 1.18
 depend: [CVTools]
 
 commands:
