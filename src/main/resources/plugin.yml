@@ -1,9 +1,9 @@
 name: CVBlocks
 main: org.cubeville.cvblocks.CVBlocks
-author: FrediW
+author: [FrediW, Ptown16]
 version: 1.18
 api-version: 1.18
-depend: [CVTools]
+depend: [CVTools, WorldEdit, WorldGuard]
 
 commands:
   cvblocks:

@@ -75,7 +75,7 @@ public class DrawLine extends BaseCommand
             err_1 = dy2 - l;
             err_2 = dz2 - l;
             for (i = 0; i < l; i++) {
-                world.getBlockAt(point[0], point[1], point[2]).setType(Material.BRICK);
+                world.getBlockAt(point[0], point[1], point[2]).setType(Material.BRICKS);
                 if (err_1 > 0) {
                     point[1] += y_inc;
                     err_1 -= dx2;
@@ -92,7 +92,7 @@ public class DrawLine extends BaseCommand
             err_1 = dx2 - m;
             err_2 = dz2 - m;
             for (i = 0; i < m; i++) {
-                world.getBlockAt(point[0], point[1], point[2]).setType(Material.BRICK);
+                world.getBlockAt(point[0], point[1], point[2]).setType(Material.BRICKS);
                 if (err_1 > 0) {
                     point[0] += x_inc;
                     err_1 -= dy2;
@@ -109,7 +109,7 @@ public class DrawLine extends BaseCommand
             err_1 = dy2 - n;
             err_2 = dx2 - n;
             for (i = 0; i < n; i++) {
-                world.getBlockAt(point[0], point[1], point[2]).setType(Material.BRICK);
+                world.getBlockAt(point[0], point[1], point[2]).setType(Material.BRICKS);
                 if (err_1 > 0) {
                     point[1] += y_inc;
                     err_1 -= dz2;
@@ -123,7 +123,7 @@ public class DrawLine extends BaseCommand
                 point[2] += z_inc;
             }
         }
-        world.getBlockAt(point[0], point[1], point[2]).setType(Material.BRICK);
+        world.getBlockAt(point[0], point[1], point[2]).setType(Material.BRICKS);
 
         return null;
     }
