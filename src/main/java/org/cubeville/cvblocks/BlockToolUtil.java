@@ -149,6 +149,7 @@ public class BlockToolUtil
                     Block targetBlock = targetWorld.getBlockAt(tminx + x, tminy + y, tminz + z);
                     Block sourceBlock = sourceWorld.getBlockAt(sminx + x, sminy + y, sminz + z);
                     targetBlock.setBlockData(sourceBlock.getBlockData());
+
                     //targetBlock.setType(sourceBlock.getType());
                     //BlockState data = sourceBlock.getState();
                     //if(data instanceof Skull) {
